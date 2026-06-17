@@ -36,7 +36,7 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
     use ModuleConfigTrait;
 
     public const CUSTOM_AUTHOR = 'elysch';
-    public const CUSTOM_VERSION = '4.1.0';
+    public const CUSTOM_VERSION = '4.1.1';
     public const GITHUB_REPO = 'webtrees-mitalteli-show-xref';
     public const AUTHOR_WEBSITE = 'https://github.com/elysch/webtrees-mitalteli-show-xref/';
     public const CUSTOM_SUPPORT_URL = self::AUTHOR_WEBSITE . 'issues';
@@ -300,17 +300,21 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
             $this->setPreference('with-link-symbol', $params['with-link-symbol'] ?? '0');
             $this->setPreference('link-symbol', $params['link-symbol'] ?? '⮺');
             $this->setPreference('sidebar-order', $params['sidebar-order'] ?? '10');
+            $default_symbols = ['⮺','→','↗','⇒','»','›','▶','🡆'];
+            $custom_symbols = trim($params['custom-link-symbols'] ?? '');
+            $symbols_array = array_filter(array_map('trim', explode(',', $custom_symbols)));
+            $link_symbol = trim($params['link-symbol'] ?? '⮺');
+            if (mb_strlen($link_symbol) > 0 && mb_strlen($link_symbol) <= 2 && !in_array($link_symbol, $symbols_array, true) && !in_array($link_symbol, $default_symbols, true)) {
+                $symbols_array[] = $link_symbol;
+            }
             if (!empty($params['new-custom-symbol'])) {
                 $new_symbol = trim($params['new-custom-symbol']);
-                if (mb_strlen($new_symbol) > 0 && mb_strlen($new_symbol) <= 2) {
-                    $existing_symbols = $this->getPreference('custom-link-symbols', '');
-                    $symbols_array = array_filter(array_map('trim', explode(',', $existing_symbols)));
-                    if (!in_array($new_symbol, $symbols_array, true)) {
-                        $symbols_array[] = $new_symbol;
-                        $this->setPreference('custom-link-symbols', implode(',', $symbols_array));
-                    }
+                if (mb_strlen($new_symbol) > 0 && mb_strlen($new_symbol) <= 2 && !in_array($new_symbol, $symbols_array, true)) {
+                    $symbols_array[] = $new_symbol;
                 }
             }
+            $symbols_array = array_values(array_unique($symbols_array));
+            $this->setPreference('custom-link-symbols', implode(',', $symbols_array));
             $message = I18N::translate('The preferences for the module “%s” have been updated.', $this->title());
             FlashMessages::addMessage($message, 'success');
         }

@@ -46,19 +46,23 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
                     <p class="small text-muted"><?= I18N::translate('Enter a symbol or character to use for the link symbol.') ?></p>
                     <div class="mb-2">
                         <p class="small text-muted mb-2"><?= I18N::translate('Suggested symbols:') ?></p>
-                        <div class="btn-group" role="group" id="symbol-buttons-group">
-                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='⮺'; return false;">⮺</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='→'; return false;">→</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='↗'; return false;">↗</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='⇒'; return false;">⇒</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='»'; return false;">»</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='›'; return false;">›</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='▶'; return false;">▶</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='🡆'; return false;">🡆</button>
+                        <div class="d-flex flex-wrap align-items-start" role="group" id="symbol-buttons-group">
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-1 mb-1" data-symbol="⮺" onclick="document.getElementById('link-symbol').value='⮺'; return false;">⮺</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-1 mb-1" data-symbol="→" onclick="document.getElementById('link-symbol').value='→'; return false;">→</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-1 mb-1" data-symbol="↗" onclick="document.getElementById('link-symbol').value='↗'; return false;">↗</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-1 mb-1" data-symbol="⇒" onclick="document.getElementById('link-symbol').value='⇒'; return false;">⇒</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-1 mb-1" data-symbol="»" onclick="document.getElementById('link-symbol').value='»'; return false;">»</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-1 mb-1" data-symbol="›" onclick="document.getElementById('link-symbol').value='›'; return false;">›</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-1 mb-1" data-symbol="▶" onclick="document.getElementById('link-symbol').value='▶'; return false;">▶</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-1 mb-1" data-symbol="🡆" onclick="document.getElementById('link-symbol').value='🡆'; return false;">🡆</button>
                             <?php foreach ($custom_link_symbols as $symbol) : ?>
-                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='<?= e($symbol) ?>'; return false;"><?= e($symbol) ?></button>
+                                <div class="d-flex flex-column align-items-center mx-1 mb-1" data-custom-symbol="<?= e($symbol) ?>">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm w-100" data-symbol="<?= e($symbol) ?>" onclick="document.getElementById('link-symbol').value='<?= e($symbol) ?>'; return false;"><?= e($symbol) ?></button>
+                                    <button type="button" class="btn btn-sm btn-remove-symbol w-100 mt-1" onclick="removeCustomSymbol('<?= e($symbol) ?>'); return false;">×</button>
+                                </div>
                             <?php endforeach ?>
                         </div>
+                        <input type="hidden" id="custom-link-symbols" name="custom-link-symbols" value="<?= e(implode(',', $custom_link_symbols)) ?>" />
                     </div>
                     <div class="input-group mb-2">
                         <input class="form-control" id="new-custom-symbol" name="new-custom-symbol" type="text" placeholder="<?= I18N::translate('Enter new symbol to the suggested list') ?>" maxlength="2" />
@@ -67,29 +71,153 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
                 </div>
             </div>
             <script>
+            const defaultLinkSymbols = ['⮺','→','↗','⇒','»','›','▶','🡆'];
+
+            function getCustomSymbols() {
+                const hidden = document.getElementById('custom-link-symbols');
+                if (!hidden || hidden.value.trim() === '') {
+                    return [];
+                }
+                return hidden.value.split(',').map(function(symbol) {
+                    return symbol.trim();
+                }).filter(function(symbol) {
+                    return symbol.length > 0;
+                });
+            }
+
+            function setCustomSymbols(symbols) {
+                const hidden = document.getElementById('custom-link-symbols');
+                hidden.value = symbols.join(',');
+            }
+
+            function appendCustomSymbolButton(symbol) {
+                const group = document.getElementById('symbol-buttons-group');
+                const customGroup = document.createElement('div');
+                customGroup.className = 'd-inline-block text-center mx-1 mb-1';
+                customGroup.setAttribute('data-custom-symbol', symbol);
+
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn btn-outline-secondary btn-sm w-100';
+                button.setAttribute('data-symbol', symbol);
+                button.textContent = symbol;
+                button.onclick = function() {
+                    document.getElementById('link-symbol').value = symbol;
+                    return false;
+                };
+                customGroup.appendChild(button);
+
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'btn btn-sm btn-remove-symbol w-100 mt-1';
+                removeButton.textContent = '×';
+                removeButton.onclick = function() {
+                    removeCustomSymbol(symbol);
+                    return false;
+                };
+                customGroup.appendChild(removeButton);
+
+                group.appendChild(customGroup);
+            }
+
+            function ensureLinkSymbolIsSuggested() {
+                const linkSymbolInput = document.getElementById('link-symbol');
+                const symbol = linkSymbolInput.value.trim();
+                if (symbol.length === 0 || symbol.length > 2 || symbol.includes(',')) {
+                    return;
+                }
+
+                const group = document.getElementById('symbol-buttons-group');
+                const existingSymbols = Array.from(group.querySelectorAll('button[data-symbol]')).map(function(button) {
+                    return button.textContent.trim();
+                });
+                if (existingSymbols.includes(symbol) || defaultLinkSymbols.includes(symbol)) {
+                    return;
+                }
+
+                const customSymbols = getCustomSymbols();
+                if (!customSymbols.includes(symbol)) {
+                    customSymbols.push(symbol);
+                    setCustomSymbols(customSymbols);
+                    appendCustomSymbolButton(symbol);
+                }
+            }
+
             function addCustomSymbol() {
                 const input = document.getElementById('new-custom-symbol');
                 const symbol = input.value.trim();
-                if (symbol.length > 0 && symbol.length <= 2) {
-                    const group = document.getElementById('symbol-buttons-group');
-                    const button = document.createElement('button');
-                    button.type = 'button';
-                    button.className = 'btn btn-outline-secondary btn-sm';
-                    button.textContent = symbol;
-                    button.onclick = function() {
-                        document.getElementById('link-symbol').value = symbol;
-                        return false;
-                    };
-                    group.appendChild(button);
-                    input.value = '';
+                if (symbol.length === 0 || symbol.length > 2 || symbol.includes(',')) {
+                    return;
                 }
+
+                const group = document.getElementById('symbol-buttons-group');
+                const existingSymbols = Array.from(group.querySelectorAll('button[data-symbol]')).map(function(button) {
+                    return button.textContent.trim();
+                });
+                if (existingSymbols.includes(symbol)) {
+                    input.classList.add('is-invalid');
+                    if (!document.getElementById('symbol-duplicate-feedback')) {
+                        const feedback = document.createElement('div');
+                        feedback.id = 'symbol-duplicate-feedback';
+                        feedback.className = 'invalid-feedback d-block';
+                        feedback.textContent = 'This symbol is already in the suggested list.';
+                        input.parentNode.appendChild(feedback);
+                    }
+                    return;
+                }
+
+                input.classList.remove('is-invalid');
+                const duplicateFeedback = document.getElementById('symbol-duplicate-feedback');
+                if (duplicateFeedback) {
+                    duplicateFeedback.remove();
+                }
+
+                const customSymbols = getCustomSymbols();
+                customSymbols.push(symbol);
+                setCustomSymbols(customSymbols);
+                appendCustomSymbolButton(symbol);
+                input.value = '';
             }
+
+            function removeCustomSymbol(symbol) {
+                const groups = document.querySelectorAll('[data-custom-symbol]');
+                groups.forEach(function(group) {
+                    if (group.getAttribute('data-custom-symbol') === symbol) {
+                        group.remove();
+                    }
+                });
+                const symbols = getCustomSymbols().filter(function(item) {
+                    return item !== symbol;
+                });
+                setCustomSymbols(symbols);
+            }
+
+            document.querySelector('form').addEventListener('submit', function() {
+                ensureLinkSymbolIsSuggested();
+            });
+
             document.getElementById('new-custom-symbol').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     addCustomSymbol();
                     e.preventDefault();
                 }
             });
+
+            const style = document.createElement('style');
+            style.textContent = `
+                .btn-remove-symbol {
+                    background-color: transparent !important;
+                    border: none !important;
+                    color: #dc3545 !important;
+                    font-weight: 700;
+                }
+                .btn-remove-symbol:hover,
+                .btn-remove-symbol:focus {
+                    background-color: #dc3545 !important;
+                    color: #fff !important;
+                }
+            `;
+            document.head.appendChild(style);
             </script>
 
             <label class="col-sm-3 col-form-label wt-page-options-label" for="sidebar-order">
