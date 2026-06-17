@@ -11,6 +11,7 @@
     "Enter new symbol to the suggested list" => 'Enter new symbol to the suggested list', // resources/views/settings.phtml
     "Add" => 'Add', // resources/views/settings.phtml
     "Link symbols are disabled." => 'Link symbols are disabled.', // resources/views/sidebar.phtml
+    "This symbol is already in the suggested list." => 'This symbol is already in the suggested list.', // client-side validation
 
     ];
 ?>

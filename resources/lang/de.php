@@ -29,6 +29,7 @@
     "Link symbols are disabled." => 'Link-Symbole sind deaktiviert.', // resources/views/sidebar.phtml
     #'Individual' => 'Individual', // resources/views/sidebar.phtml
     #'Step children' => 'Step children', // resources/views/sidebar.phtml
+    "This symbol is already in the suggested list." => 'Dieses Symbol ist bereits in der Vorschlagsliste.', // client-side validation
 
     ];
 ?>

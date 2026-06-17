@@ -29,6 +29,7 @@
     "UID information is disabled." => 'La consulta de valores UID está deshabilitada.', // resources/views/sidebar-header.phtml - Line 13 - title of sidebar
     #'Individual' => 'Individual', // resources/views/sidebar.phtml
     #'Step children' => 'Step children', // resources/views/sidebar.phtml
+    "This symbol is already in the suggested list." => 'Este símbolo ya está en la lista de sugerencias.', // client-side validation
 
     ];
 ?>
