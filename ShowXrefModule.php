@@ -205,7 +205,7 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
             'with_uid'          => $this->getPreference('with-uid', '1'),
             'with_css'          => $this->getPreference('with-css', '1'),
             'with_link_symbol'  => $this->getPreference('with-link-symbol', '1'),
-            'link_symbol'       => $this->getPreference('link-symbol', '🡆'),
+            'link_symbol'       => $this->getPreference('link-symbol', '⮺'),
             'is_admin'          => Auth::isAdmin(),
         ]);
     }
@@ -252,7 +252,7 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
             'with_uid'          => $this->getPreference('with-uid', '1'),
             'with_css'          => $this->getPreference('with-css', '1'),
             'with_link_symbol'  => $this->getPreference('with-link-symbol', '1'),
-            'link_symbol'       => $this->getPreference('link-symbol', '🡆'),
+            'link_symbol'       => $this->getPreference('link-symbol', '⮺'),
         ]);
     }
 
@@ -275,7 +275,7 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
             'with_uid'            => $this->getPreference('with-uid', '1'),
             'with_css'            => $this->getPreference('with-css', '1'),
             'with_link_symbol'    => $this->getPreference('with-link-symbol', '1'),
-            'link_symbol'         => $this->getPreference('link-symbol', '🡆'),
+            'link_symbol'         => $this->getPreference('link-symbol', '⮺'),
             'custom_link_symbols' => $custom_symbols_array,
             'sidebar_order'       => $this->getPreference('sidebar-order', '10'),
             'title'               => $this->title(),
@@ -298,7 +298,7 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
             $this->setPreference('with-uid', $params['with-uid'] ?? '0');
             $this->setPreference('with-css', $params['with-css'] ?? '0');
             $this->setPreference('with-link-symbol', $params['with-link-symbol'] ?? '0');
-            $this->setPreference('link-symbol', $params['link-symbol'] ?? '🡆');
+            $this->setPreference('link-symbol', $params['link-symbol'] ?? '⮺');
             $this->setPreference('sidebar-order', $params['sidebar-order'] ?? '10');
             if (!empty($params['new-custom-symbol'])) {
                 $new_symbol = trim($params['new-custom-symbol']);
