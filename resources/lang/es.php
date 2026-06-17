@@ -14,6 +14,13 @@
     "save" => 'guardar', // resources/views/settings.phtml
     "Enable/Disable CSS Gender Background Colors" => 'Activar/desactivar los CSS para colores de fondo según género', // resources/views/settings.phtml
     "Gender background colors are disabled." => 'Los colores de fondo por género están desactivados.', // resources/views/sidebar.phtml - Line 33
+    "Enable/Disable link symbol" => 'Activar/Desactivar símbolo de enlace', // resources/views/settings.phtml
+    "Link symbol" => 'Símbolo de enlace', // resources/views/settings.phtml
+    "Enter a symbol or character to use for the link symbol." => 'Ingrese un símbolo o carácter para usar como símbolo de enlace.', // resources/views/settings.phtml
+    "Suggested symbols:" => 'Símbolos sugeridos:', // resources/views/settings.phtml
+    "Enter new symbol to the suggested list" => 'Ingrese nuevo símbolo a la lista sugerida', // resources/views/settings.phtml
+    "Add" => 'Añadir', // resources/views/settings.phtml
+    "Link symbols are disabled." => 'Los símbolos de enlace están deshabilitados.', // resources/views/sidebar.phtml
     "XREF and UID information" => 'Información de valores XREF y UID', // resources/views/sidebar.phtml - Line 13 - title of sidebar
     "XREF information" => 'Información de valores XREF', // resources/views/sidebar-header.phtml - Line 13 - title of sidebar
     #'Private' => 'Private', // resources/views/sidebar-xref.phtml

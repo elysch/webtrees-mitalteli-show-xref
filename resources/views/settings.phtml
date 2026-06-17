@@ -34,10 +34,63 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
             <div>
                 <?= view('components/checkbox', ['label' => I18N::translate('Enable/Disable CSS Gender Background Colors'), 'name' => 'with-css', 'checked' => (bool) $with_css]) ?>
             </div>
-            <!-- ADD A LINK ARROW -->
+            <!-- ADD A LINK SYMBOL -->
             <div>
-                <?= view('components/checkbox', ['label' => I18N::translate('Enable/Disable link arrow'), 'name' => 'with-link-arrow', 'checked' => (bool) $with_link_arrow]) ?>
+                <?= view('components/checkbox', ['label' => I18N::translate('Enable/Disable link symbol'), 'name' => 'with-link-symbol', 'checked' => (bool) $with_link_symbol]) ?>
             </div>
+            <!-- DEFINE A LINK SYMBOL -->
+            <div>
+                <label class="form-label" for="link-symbol"><?= I18N::translate('Link symbol') ?></label>
+                <div class="ps-3">
+                    <input class="form-control" id="link-symbol" name="link-symbol" type="text" value="<?= e($link_symbol) ?>" maxlength="2" />
+                    <p class="small text-muted"><?= I18N::translate('Enter a symbol or character to use for the link symbol.') ?></p>
+                    <div class="mb-2">
+                        <p class="small text-muted mb-2"><?= I18N::translate('Suggested symbols:') ?></p>
+                        <div class="btn-group" role="group" id="symbol-buttons-group">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='⮺'; return false;">⮺</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='→'; return false;">→</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='↗'; return false;">↗</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='⇒'; return false;">⇒</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='»'; return false;">»</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='›'; return false;">›</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='▶'; return false;">▶</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='🡆'; return false;">🡆</button>
+                            <?php foreach ($custom_link_symbols as $symbol) : ?>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('link-symbol').value='<?= e($symbol) ?>'; return false;"><?= e($symbol) ?></button>
+                            <?php endforeach ?>
+                        </div>
+                    </div>
+                    <div class="input-group mb-2">
+                        <input class="form-control" id="new-custom-symbol" name="new-custom-symbol" type="text" placeholder="<?= I18N::translate('Enter new symbol to the suggested list') ?>" maxlength="2" />
+                        <button class="btn btn-outline-secondary" type="button" onclick="addCustomSymbol(); return false;"><?= I18N::translate('Add') ?></button>
+                    </div>
+                </div>
+            </div>
+            <script>
+            function addCustomSymbol() {
+                const input = document.getElementById('new-custom-symbol');
+                const symbol = input.value.trim();
+                if (symbol.length > 0 && symbol.length <= 2) {
+                    const group = document.getElementById('symbol-buttons-group');
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'btn btn-outline-secondary btn-sm';
+                    button.textContent = symbol;
+                    button.onclick = function() {
+                        document.getElementById('link-symbol').value = symbol;
+                        return false;
+                    };
+                    group.appendChild(button);
+                    input.value = '';
+                }
+            }
+            document.getElementById('new-custom-symbol').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addCustomSymbol();
+                    e.preventDefault();
+                }
+            });
+            </script>
 
             <label class="col-sm-3 col-form-label wt-page-options-label" for="sidebar-order">
                 <?= I18N::translate('Sidebar order') ?>

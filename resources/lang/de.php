@@ -20,6 +20,13 @@
     #'Family' => 'Family', // resources/views/sidebar-xref.phtml
     "UID information is disabled." => 'Anzeige von UID ist deaktiviert.', // resources/views/sidebar.phtml - Line 13 - title of sidebar
     "Gender background colors are disabled." => 'Hintergrundfarben für das Geschlecht sind deaktiviert.', // resources/views/sidebar.phtml - Line 33
+    "Enable/Disable link symbol" => 'Link-Symbol aktivieren/deaktivieren', // resources/views/settings.phtml
+    "Link symbol" => 'Link-Symbol', // resources/views/settings.phtml
+    "Enter a symbol or character to use for the link symbol." => 'Geben Sie ein Symbol oder Zeichen für das Link-Symbol ein.', // resources/views/settings.phtml
+    "Suggested symbols:" => 'Vorgeschlagene Symbole:', // resources/views/settings.phtml
+    "Enter new symbol to the suggested list" => 'Neues Symbol zur Vorschlagsliste hinzufügen', // resources/views/settings.phtml
+    "Add" => 'Hinzufügen', // resources/views/settings.phtml
+    "Link symbols are disabled." => 'Link-Symbole sind deaktiviert.', // resources/views/sidebar.phtml
     #'Individual' => 'Individual', // resources/views/sidebar.phtml
     #'Step children' => 'Step children', // resources/views/sidebar.phtml
 

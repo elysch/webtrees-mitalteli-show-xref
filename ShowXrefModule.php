@@ -36,7 +36,7 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
     use ModuleConfigTrait;
 
     public const CUSTOM_AUTHOR = 'elysch';
-    public const CUSTOM_VERSION = '4.0.0';
+    public const CUSTOM_VERSION = '4.1.0';
     public const GITHUB_REPO = 'webtrees-mitalteli-show-xref';
     public const AUTHOR_WEBSITE = 'https://github.com/elysch/webtrees-mitalteli-show-xref/';
     public const CUSTOM_SUPPORT_URL = self::AUTHOR_WEBSITE . 'issues';
@@ -200,12 +200,13 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
         }
 
         return view($this->name() . '::sidebar-header', [
-            'module'          => $this,
-            'individual'      => $individual,
-            'with_uid'        => $this->getPreference('with-uid', '1'),
-            'with_css'        => $this->getPreference('with-css', '1'),
-            'with_link_arrow' => $this->getPreference('with-link-arrow', '1'),
-            'is_admin'        => Auth::isAdmin(),
+            'module'            => $this,
+            'individual'        => $individual,
+            'with_uid'          => $this->getPreference('with-uid', '1'),
+            'with_css'          => $this->getPreference('with-css', '1'),
+            'with_link_symbol'  => $this->getPreference('with-link-symbol', '1'),
+            'link_symbol'       => $this->getPreference('link-symbol', '🡆'),
+            'is_admin'          => Auth::isAdmin(),
         ]);
     }
 
@@ -243,14 +244,15 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
         $expand_sidebar     = (bool) $this->getPreference('expand-sidebar') && Auth::isEditor($individual->tree());
 
         return view($this->name() . '::sidebar', [
-            'expand_sidebar'  => $expand_sidebar,
-            'individual'      => $individual,
-            'tree'            => $individual->tree(),
-            'module'          => $this,
-            'module_basename' => $this->name(),
-            'with_uid'        => $this->getPreference('with-uid', '1'),
-            'with_css'        => $this->getPreference('with-css', '1'),
-            'with_link_arrow' => $this->getPreference('with-link-arrow', '1'),
+            'expand_sidebar'    => $expand_sidebar,
+            'individual'        => $individual,
+            'tree'              => $individual->tree(),
+            'module'            => $this,
+            'module_basename'   => $this->name(),
+            'with_uid'          => $this->getPreference('with-uid', '1'),
+            'with_css'          => $this->getPreference('with-css', '1'),
+            'with_link_symbol'  => $this->getPreference('with-link-symbol', '1'),
+            'link_symbol'       => $this->getPreference('link-symbol', '🡆'),
         ]);
     }
 
@@ -265,13 +267,18 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
     {
         $this->layout = 'layouts/administration';
 
+        $custom_symbols = $this->getPreference('custom-link-symbols', '');
+        $custom_symbols_array = array_filter(array_map('trim', explode(',', $custom_symbols)));
+
         return $this->viewResponse($this->name() . '::settings', [
-            'expand_sidebar'  => $this->getPreference('expand-sidebar'),
-            'with_uid'        => $this->getPreference('with-uid', '1'),
-            'with_css'        => $this->getPreference('with-css', '1'),
-            'with_link_arrow' => $this->getPreference('with-link-arrow', '1'),
-            'sidebar_order'   => $this->getPreference('sidebar-order', '10'),
-            'title'           => $this->title(),
+            'expand_sidebar'      => $this->getPreference('expand-sidebar'),
+            'with_uid'            => $this->getPreference('with-uid', '1'),
+            'with_css'            => $this->getPreference('with-css', '1'),
+            'with_link_symbol'    => $this->getPreference('with-link-symbol', '1'),
+            'link_symbol'         => $this->getPreference('link-symbol', '🡆'),
+            'custom_link_symbols' => $custom_symbols_array,
+            'sidebar_order'       => $this->getPreference('sidebar-order', '10'),
+            'title'               => $this->title(),
         ]);
     }
 
@@ -290,9 +297,20 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
             $this->setPreference('expand-sidebar', $params['expand-sidebar'] ?? '0');
             $this->setPreference('with-uid', $params['with-uid'] ?? '0');
             $this->setPreference('with-css', $params['with-css'] ?? '0');
-            $this->setPreference('with-link-arrow', $params['with-link-arrow'] ?? '0');
+            $this->setPreference('with-link-symbol', $params['with-link-symbol'] ?? '0');
+            $this->setPreference('link-symbol', $params['link-symbol'] ?? '🡆');
             $this->setPreference('sidebar-order', $params['sidebar-order'] ?? '10');
-
+            if (!empty($params['new-custom-symbol'])) {
+                $new_symbol = trim($params['new-custom-symbol']);
+                if (mb_strlen($new_symbol) > 0 && mb_strlen($new_symbol) <= 2) {
+                    $existing_symbols = $this->getPreference('custom-link-symbols', '');
+                    $symbols_array = array_filter(array_map('trim', explode(',', $existing_symbols)));
+                    if (!in_array($new_symbol, $symbols_array, true)) {
+                        $symbols_array[] = $new_symbol;
+                        $this->setPreference('custom-link-symbols', implode(',', $symbols_array));
+                    }
+                }
+            }
             $message = I18N::translate('The preferences for the module “%s” have been updated.', $this->title());
             FlashMessages::addMessage($message, 'success');
         }

@@ -14,6 +14,13 @@
     "save" => 'opslaan', // resources/views/settings.phtml
     "Enable/Disable CSS Gender Background Colors" => 'CSS-achtergrondkleuren voor geslacht in-/uitschakelen', // resources/views/settings.phtml
     "Gender background colors are disabled." => 'Achtergrondkleuren voor geslacht zijn uitgeschakeld.', // resources/views/sidebar.phtml - Line 33
+    "Enable/Disable link symbol" => 'Koppelingssymbool in-/uitschakelen', // resources/views/settings.phtml
+    "Link symbol" => 'Koppelingssymbool', // resources/views/settings.phtml
+    "Enter a symbol or character to use for the link symbol." => 'Voer een symbool of teken in voor het koppelingssymbool.', // resources/views/settings.phtml
+    "Suggested symbols:" => 'Voorgestelde symbolen:', // resources/views/settings.phtml
+    "Enter new symbol to the suggested list" => 'Voer een nieuw symbool in voor de voorgestelde lijst', // resources/views/settings.phtml
+    "Add" => 'Toevoegen', // resources/views/settings.phtml
+    "Link symbols are disabled." => 'Koppelingssymbolen zijn uitgeschakeld.', // resources/views/sidebar.phtml
     "XREF and UID information" => 'XREF- en UID-informatie', // resources/views/sidebar.phtml - Line 13 - title of sidebar
     "XREF information" => 'XREF-informatie', // resources/views/sidebar-header.phtml - Line 13 - title of sidebar
     #'Private' => 'Private', // resources/views/sidebar-xref.phtml
