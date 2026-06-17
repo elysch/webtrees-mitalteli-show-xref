@@ -34,6 +34,10 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
             <div>
                 <?= view('components/checkbox', ['label' => I18N::translate('Enable/Disable CSS Gender Background Colors'), 'name' => 'with-css', 'checked' => (bool) $with_css]) ?>
             </div>
+            <!-- ADD A LINK ARROW -->
+            <div>
+                <?= view('components/checkbox', ['label' => I18N::translate('Enable/Disable link arrow'), 'name' => 'with-link-arrow', 'checked' => (bool) $with_link_arrow]) ?>
+            </div>
 
             <label class="col-sm-3 col-form-label wt-page-options-label" for="sidebar-order">
                 <?= I18N::translate('Sidebar order') ?>

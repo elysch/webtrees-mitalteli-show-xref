@@ -12,6 +12,9 @@ use Fisharebest\Webtrees\Individual;
  * @var string     $module_basename
  * @var bool       $with_uid
  * @var bool       $with_css
+ * @var bool       $with_link_arrow
+ * @var string     $title
+ * @var ShowXrefModule $module
  */
 ?>
 
@@ -31,62 +34,70 @@ use Fisharebest\Webtrees\Individual;
                      <?php if (! $with_css) : ?>  <!-- # CSS Classes not Set -->
                         <span class="show-xref-notset"><br><?= I18N::translate("Gender background colors are disabled.") ?></span>
                     <?php endif ?>
+                    <?php if (! $with_link_arrow) : ?>  <!-- # Link Arrow not Set -->
+                        <span class="show-xref-notset"><br><?= I18N::translate("Link arrows are disabled.") ?></span>
+                    <?php endif ?>
 			</div>
    
                     <!-- the individual itself -->
                     <?= view($module_basename . '::sidebar-xref', [
-                        'module'     => $module,
-                        'individual' => $individual, 
-                        'title'      => I18N::translate('Individual'), 
-                        'with_uid'   => $with_uid,
-                        'with_css'   => $with_css,
+                        'module'          => $module,
+                        'individual'      => $individual, 
+                        'title'           => I18N::translate('Individual'), 
+                        'with_uid'        => $with_uid,
+                        'with_css'        => $with_css,
+                        'with_link_arrow' => $with_link_arrow,
                     ]) ?>
     
                     <!-- parent families -->
                     <?php foreach ($individual->childFamilies() as $family) : ?>
                         <?= view($module_basename . '::sidebar-xref', [
-                            'module'     => $module,
-                            'individual' => $individual, 
-                            'family'     => $family, 
-                            'title'      => $individual->getChildFamilyLabel($family), 
-                            'with_uid'   => $with_uid,
-							'with_css'   => $with_css,
+                            'module'          => $module,
+                            'individual'      => $individual, 
+                            'family'          => $family, 
+                            'title'           => $individual->getChildFamilyLabel($family), 
+                            'with_uid'        => $with_uid,
+							'with_css'        => $with_css,
+                            'with_link_arrow' => $with_link_arrow,
                         ]) ?>
                     <?php endforeach ?>
                 
                     <!-- step parents -->
                     <?php foreach ($individual->childStepFamilies() as $family) : ?>
                         <?= view($module_basename . '::sidebar-xref', [
-                            'module'     => $module,
-                            'individual' => $individual, 
-                            'family'     => $family, 
-                            'title'      => $individual->getStepFamilyLabel($family), 
-                            'with_uid'   => $with_uid,
-							'with_css'   => $with_css,
+                            'module'          => $module,
+                            'individual'      => $individual, 
+                            'family'          => $family, 
+                            'title'           => $individual->getStepFamilyLabel($family), 
+                            'with_uid'        => $with_uid,
+							'with_css'        => $with_css,
+                            'with_link_arrow' => $with_link_arrow,
                         ]) ?>
                     <?php endforeach ?>
                 
                     <!-- spouse and children -->
                     <?php foreach ($individual->spouseFamilies() as $family) : ?>
                         <?= view($module_basename . '::sidebar-xref', [
-                            'module'     => $module,
-                            'individual' => $individual, 
-                            'family'     => $family, 
-                            'title'      => $individual->getSpouseFamilyLabel($family), 
-                            'with_uid'   => $with_uid,
-							'with_css'   => $with_css,
+                            'module'          => $module,
+                            'individual'      => $individual, 
+                            'family'          => $family, 
+                            'title'           => $individual->getSpouseFamilyLabel($family), 
+                            'with_uid'        => $with_uid,
+							'with_css'        => $with_css,
+                            'with_link_arrow' => $with_link_arrow,
                         ]) ?>
                     <?php endforeach ?>
                 
                     <!-- step children -->
                     <?php foreach ($individual->spouseStepFamilies() as $family) : ?>
                         <?= view($module_basename . '::sidebar-xref', [
-                            'module'     => $module,
-                            'individual' => $individual, 
-                            'family' => $family, 
-                            'title' => I18N::translate('Step children'), 
-                            'with_uid' => $with_uid,
-							'with_css'   => $with_css
+                            'module'          => $module,
+                            'individual'      => $individual, 
+                            'family'          => $family, 
+                            'title'           => I18N::translate('Step children'), 
+                            'with_uid'        => $with_uid,
+							'with_css'        => $with_css,
+                            'with_link_arrow' => $with_link_arrow,
                         ]) ?>
                     <?php endforeach ?>
         </div>

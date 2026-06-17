@@ -183,15 +183,29 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
     /**
      * The text that appears on the sidebar's title.
      *
+     * @param Individual|mixed|null $individual Compatible con 2.0 (null), 2.1 (Individual) y 2.2 (Individual)
      * @return string
      */
-    public function sidebarTitle(Individual $individual): string
+    public function sidebarTitle($individual = null): string
     {
+        // 1. Make sure the object is an instance of Individual (for webtrees 2.1 / 2.2)
+        if (!$individual instanceof Individual) {
+            $individual = null;
+        }
+
+        // 2. If running on webtrees 2.0, $individual will be null.
+        if ($individual === null) {
+            // Opcional: obtener el individuo actual desde el request si tu lógica lo necesita
+            // $individual = ...
+        }
+
         return view($this->name() . '::sidebar-header', [
-            'module'   => $this,
-            'with_uid' => $this->getPreference('with-uid', '1'),
-            'with_css' => $this->getPreference('with-css', '1'),
-            'is_admin' => Auth::isAdmin(),
+            'module'          => $this,
+            'individual'      => $individual,
+            'with_uid'        => $this->getPreference('with-uid', '1'),
+            'with_css'        => $this->getPreference('with-css', '1'),
+            'with_link_arrow' => $this->getPreference('with-link-arrow', '1'),
+            'is_admin'        => Auth::isAdmin(),
         ]);
     }
 
@@ -236,6 +250,7 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
             'module_basename' => $this->name(),
             'with_uid'        => $this->getPreference('with-uid', '1'),
             'with_css'        => $this->getPreference('with-css', '1'),
+            'with_link_arrow' => $this->getPreference('with-link-arrow', '1'),
         ]);
     }
 
@@ -251,11 +266,12 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
         $this->layout = 'layouts/administration';
 
         return $this->viewResponse($this->name() . '::settings', [
-            'expand_sidebar' => $this->getPreference('expand-sidebar'),
-            'with_uid'       => $this->getPreference('with-uid', '1'),
-            'with_css'       => $this->getPreference('with-css', '1'),
-            'sidebar_order'  => $this->getPreference('sidebar-order', '10'),
-            'title'          => $this->title(),
+            'expand_sidebar'  => $this->getPreference('expand-sidebar'),
+            'with_uid'        => $this->getPreference('with-uid', '1'),
+            'with_css'        => $this->getPreference('with-css', '1'),
+            'with_link_arrow' => $this->getPreference('with-link-arrow', '1'),
+            'sidebar_order'   => $this->getPreference('sidebar-order', '10'),
+            'title'           => $this->title(),
         ]);
     }
 
@@ -274,6 +290,7 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
             $this->setPreference('expand-sidebar', $params['expand-sidebar'] ?? '0');
             $this->setPreference('with-uid', $params['with-uid'] ?? '0');
             $this->setPreference('with-css', $params['with-css'] ?? '0');
+            $this->setPreference('with-link-arrow', $params['with-link-arrow'] ?? '0');
             $this->setPreference('sidebar-order', $params['sidebar-order'] ?? '10');
 
             $message = I18N::translate('The preferences for the module “%s” have been updated.', $this->title());
