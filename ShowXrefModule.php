@@ -36,7 +36,7 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
     use ModuleConfigTrait;
 
     public const CUSTOM_AUTHOR = 'elysch';
-    public const CUSTOM_VERSION = '4.2.0';
+    public const CUSTOM_VERSION = '4.2.1';
     public const GITHUB_REPO = 'webtrees-mitalteli-show-xref';
     public const AUTHOR_WEBSITE = 'https://github.com/elysch/webtrees-mitalteli-show-xref/';
     public const CUSTOM_SUPPORT_URL = self::AUTHOR_WEBSITE . 'issues';
