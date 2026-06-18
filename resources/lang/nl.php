@@ -29,7 +29,7 @@
     "UID information is disabled." => 'UID-informatie is uitgeschakeld.', // resources/views/sidebar-header.phtml - Line 13 - title of sidebar
     #'Individual' => 'Individual', // resources/views/sidebar.phtml
     #'Step children' => 'Step children', // resources/views/sidebar.phtml
-    "This symbol is already in the suggested list." => 'Dit symbool is al in de voorgestelde lijst.', // client-side validation
+    "This symbol is already in the suggested list." => 'Dit symbool staat al in de voorgestelde lijst.', // client-side validation
 
     ];
 ?>
