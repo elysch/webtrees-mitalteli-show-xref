@@ -352,24 +352,30 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
     {
         $tags = ['NAME'];
         $auth_level = Auth::accessLevel($individual->tree(),Auth::user());
-
         $debug_string = '';
+
         $can_show_name = $individual->canShow();
+
         if ($can_show_name) {
             $can_show_name = $individual->canShowName();
             $debug_string = $debug_string . 'a';
+            if (! $can_show_name) {
+                $debug_string = $debug_string . 'Z';
+            }
         }
+
         if ($can_show_name) {
             $names = $individual->facts($tags, false, $auth_level);
             $debug_string = $debug_string . 'b';
             if (count($names) > 0) {
-                $debug_string = $debug_string . '[c1' . print_r($names, true).'c1]';
+                #$debug_string = $debug_string . '[c1' . print_r($names, true).'c1]';
                 $debug_string = $debug_string . 'c';
                 if ($names[0]->canShow()) {
                     $debug_string = $debug_string . 'dFCS';
                 } else {
                     $can_show_name = false;
                     $debug_string = $debug_string . 'e';
+                    $debug_string = $debug_string . 'Z';
                     #$debug_string = str_replace($spouse_tmp->fullName(), I18N::translate('Private'), $title);
                 }
             } else {
@@ -383,18 +389,21 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
             // Does this record have a default RESN?
             $individual_privacy = $individual->tree()->getIndividualPrivacy();
             $debug_string = $debug_string . 'g';
-            $debug_string = $debug_string . '[g2' . print_r($individual_privacy, true).'g2]';
+            #$debug_string = $debug_string . '[g2' . print_r($individual_privacy, true).'g2]';
 
             if (isset($individual_privacy[$individual->xref()])) {
                 $can_show_name = $individual_privacy[$xref()] >= $auth_level;
                 $debug_string = $debug_string . 'h';
+            }
+            if (! $can_show_name) {
+                $debug_string = $debug_string . 'Z';
             }
         }
 
         if ($can_show_name) {
             $fact_privacy = $individual->tree()->getFactPrivacy();
             $debug_string = $debug_string . 'i';
-            $debug_string = $debug_string . '[i2' . print_r($fact_privacy, true).'i2]';
+            #$debug_string = $debug_string . '[i2' . print_r($fact_privacy, true).'i2]';
 
             foreach ($tags as $tag) {
                 if (isset($fact_privacy[$tag])) {
@@ -402,6 +411,7 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
                     $debug_string = $debug_string . 'j';
                 }
                 if (! $can_show_name) {
+                    $debug_string = $debug_string . 'Z';
                     break;
                 }
             }
@@ -410,7 +420,7 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
         if ($can_show_name) {
             $individual_fact_privacy = $individual->tree()->getIndividualFactPrivacy();
             $debug_string = $debug_string . 'k';
-            $debug_string = $debug_string . '[k2' . print_r($individual_fact_privacy, true).'k2]';
+            #$debug_string = $debug_string . '[k2' . print_r($individual_fact_privacy, true).'k2]';
 
             foreach ($tags as $tag) {
                 if (isset($individual_fact_privacy[$xref][$tag])) {
@@ -418,12 +428,13 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
                     $debug_string = $debug_string . 'l';
                 }
                 if (! $can_show_name) {
+                    $debug_string = $debug_string . 'Z';
                     break;
                 }
             }
         }
 
-        print_r($debug_string, true);
+        #print "<pre>" . print_r($debug_string, true) . "</pre>";
         return $can_show_name;
     }
 
