@@ -4,6 +4,9 @@ use Ramsey\Uuid\Uuid;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\View;
 use Fisharebest\Webtrees\Individual;
+use Fisharebest\Webtrees\Registry;
+use Fisharebest\Webtrees\Tree;
+use Fisharebest\Webtrees\Auth;
 
 /*
  * @var bool       $expand_sidebar
@@ -67,11 +70,23 @@ use Fisharebest\Webtrees\Individual;
 
             <!-- step parents -->
             <?php foreach ($individual->childStepFamilies() as $family) : ?>
+                <?php 
+                    $title = $individual->getStepFamilyLabel($family); 
+                    if (!empty($title)) {
+                        foreach ($family->spouses() as $parent_tmp) {
+                            if ($family->spouse($parent_tmp) instanceof Individual) {
+                                if (! $module->reallyCanShowName($parent_tmp)) {
+                                    $title = str_replace($family->spouse($parent_tmp)->fullName(), I18N::translate('Private'), $title);
+                                }
+                            }
+                        }
+                    }
+                ?>
                 <?= view($module_basename . '::sidebar-xref', [
                     'module'            => $module,
                     'individual'        => $individual,
                     'family'            => $family,
-                    'title'             => $individual->getStepFamilyLabel($family),
+                    'title'             => $title,
                     'with_uid'          => $with_uid,
                     'with_css'          => $with_css,
                     'with_link_symbol'  => $with_link_symbol,
@@ -81,11 +96,17 @@ use Fisharebest\Webtrees\Individual;
 
             <!-- spouse and children -->
             <?php foreach ($individual->spouseFamilies() as $family) : ?>
+                <?php 
+                    $title = $individual->getSpouseFamilyLabel($family); 
+                    if (! $module->reallyCanShowName($family->spouse($individual))) {
+                        $title = str_replace($family->spouse($individual)->fullName(), I18N::translate('Private'), $title);
+                    }
+                ?>
                 <?= view($module_basename . '::sidebar-xref', [
                     'module'            => $module,
                     'individual'        => $individual,
                     'family'            => $family,
-                    'title'             => $individual->getSpouseFamilyLabel($family),
+                    'title'             => $title,
                     'with_uid'          => $with_uid,
                     'with_css'          => $with_css,
                     'with_link_symbol'  => $with_link_symbol,

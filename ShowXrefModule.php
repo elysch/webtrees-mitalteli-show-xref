@@ -342,6 +342,92 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
     }
 
     /**
+     * A function to evaluate if the name of an individual can be shown, taking into account all the privacy settings that webtrees has (tree, individual, fact, individual fact).
+     * This is needed because canShowName() only evaluates the tree and individual privacy settings, but not the fact or individual fact privacy settings.
+     *
+     * @param Individual $individual
+     * @return bool
+     */
+    function reallyCanShowName(Individual $individual) : bool 
+    {
+        $tags = ['NAME'];
+        $auth_level = Auth::accessLevel($individual->tree(),Auth::user());
+
+        $debug_string = '';
+        $can_show_name = $individual->canShow();
+        if ($can_show_name) {
+            $can_show_name = $individual->canShowName();
+            $debug_string = $debug_string . 'a';
+        }
+        if ($can_show_name) {
+            $names = $individual->facts($tags, false, $auth_level);
+            $debug_string = $debug_string . 'b';
+            if (count($names) > 0) {
+                $debug_string = $debug_string . '[c1' . print_r($names, true).'c1]';
+                $debug_string = $debug_string . 'c';
+                if ($names[0]->canShow()) {
+                    $debug_string = $debug_string . 'dFCS';
+                } else {
+                    $can_show_name = false;
+                    $debug_string = $debug_string . 'e';
+                    #$debug_string = str_replace($spouse_tmp->fullName(), I18N::translate('Private'), $title);
+                }
+            } else {
+                $debug_string = $debug_string . 'f';
+            }
+        }
+
+        $xref = $individual->xref();
+
+        if ($can_show_name) {
+            // Does this record have a default RESN?
+            $individual_privacy = $individual->tree()->getIndividualPrivacy();
+            $debug_string = $debug_string . 'g';
+            $debug_string = $debug_string . '[g2' . print_r($individual_privacy, true).'g2]';
+
+            if (isset($individual_privacy[$individual->xref()])) {
+                $can_show_name = $individual_privacy[$xref()] >= $auth_level;
+                $debug_string = $debug_string . 'h';
+            }
+        }
+
+        if ($can_show_name) {
+            $fact_privacy = $individual->tree()->getFactPrivacy();
+            $debug_string = $debug_string . 'i';
+            $debug_string = $debug_string . '[i2' . print_r($fact_privacy, true).'i2]';
+
+            foreach ($tags as $tag) {
+                if (isset($fact_privacy[$tag])) {
+                    $can_show_name = $fact_privacy[$xref()] >= $auth_level;
+                    $debug_string = $debug_string . 'j';
+                }
+                if (! $can_show_name) {
+                    break;
+                }
+            }
+        }
+
+        if ($can_show_name) {
+            $individual_fact_privacy = $individual->tree()->getIndividualFactPrivacy();
+            $debug_string = $debug_string . 'k';
+            $debug_string = $debug_string . '[k2' . print_r($individual_fact_privacy, true).'k2]';
+
+            foreach ($tags as $tag) {
+                if (isset($individual_fact_privacy[$xref][$tag])) {
+                    $can_show_name = $individual_fact_privacy[$xref][$tag] >= $auth_level;
+                    $debug_string = $debug_string . 'l';
+                }
+                if (! $can_show_name) {
+                    break;
+                }
+            }
+        }
+
+        print_r($debug_string, true);
+        return $can_show_name;
+    }
+
+    /**
      * A breaking change in webtrees 2.2.0 changes how the classes are retrieved.
      * This function allows support for both 2.1.X and 2.2.X versions
      * @param $class
