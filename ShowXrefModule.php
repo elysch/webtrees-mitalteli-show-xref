@@ -348,8 +348,12 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
      * @param Individual $individual
      * @return bool
      */
-    function reallyCanShowName(Individual $individual) : bool 
+    function reallyCanShowName(?Individual $individual) : bool 
     {
+        if ($individual === null) {
+            return true;
+        }
+
         $tags = ['NAME'];
         $auth_level = Auth::accessLevel($individual->tree(),Auth::user());
         $debug_string = '';
