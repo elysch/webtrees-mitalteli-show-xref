@@ -36,10 +36,20 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
     use ModuleConfigTrait;
 
     public const CUSTOM_AUTHOR = 'elysch';
-    public const CUSTOM_VERSION = '4.2.1';
+    public const CUSTOM_VERSION = '4.2.2';
     public const GITHUB_REPO = 'webtrees-mitalteli-show-xref';
     public const AUTHOR_WEBSITE = 'https://github.com/elysch/webtrees-mitalteli-show-xref/';
     public const CUSTOM_SUPPORT_URL = self::AUTHOR_WEBSITE . 'issues';
+
+    /** Sorts the module next to the author's other modules in the module list.
+     * The prefix is added in a single place, customTranslations(), to the module title (MODULE_TITLE).
+     * Every place that translates it (title(), the preferences page, the flash message...) gets the prefix
+     * from there, in every language (also when the language has no translation of it and the English text
+     * is used). */
+    private const TITLE_PREFIX = "\u{26EE} "; # ⛮
+
+    /** Name of the module. msgid of the translation that customTranslations() prefixes. */
+    public const MODULE_TITLE = 'XREF and UID values module.';
 
     private const REGEX_UID_INTERNAL = '[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}|[0-9a-fA-F]{36}|[0-9a-fA-F]{38}';
 
@@ -71,9 +81,8 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
      */
     public function title(): string
     {
-
-        /* I18N: Name of a module */
-        return I18N::translate('XREF and UID values module.');
+        /* I18N: Name of a module. The sorting prefix is injected by customTranslations() */
+        return I18N::translate(self::MODULE_TITLE);
     }
 
     /**
@@ -151,9 +160,23 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
      */
     public function customTranslations(string $language): array
     {
-        $file = $this->resourcesFolder() . 'lang/' . $language . '.php';
+        $translations = [];
 
-        return file_exists($file) ? (new Translation($file))->asArray() : [];
+        // $language is validated before it is used to build a file path.
+        if (preg_match('/^[A-Za-z]{2,3}([_-][A-Za-z0-9]+)*$/', $language) === 1) {
+            $file = $this->resourcesFolder() . 'lang/' . $language . '.php';
+
+            if (is_file($file)) {
+                $translations = (new Translation($file))->asArray();
+            }
+        }
+
+        // The sorting prefix is added here, once, to the module title (also when the language has no
+        // translation of it and the English text is used, and also for languages without a file).
+        $title                           = $translations[self::MODULE_TITLE] ?? self::MODULE_TITLE;
+        $translations[self::MODULE_TITLE] = self::TITLE_PREFIX . (is_string($title) ? $title : self::MODULE_TITLE);
+
+        return $translations;
     }
 
     /**
