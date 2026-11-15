@@ -45,4 +45,3 @@ Please search in those places before writing new messages. Maybe your concern ha
  [2]: https://webtrees.github.io/download
  [3]: https://github.com/elysch/webtrees-mitalteli-show-xref/issues?state=open
  [4]: https://www.webtrees.net/index.php/forum/index
-
