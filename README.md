@@ -5,6 +5,7 @@ Module for webtrees genealogy software to show XREF and UID values
 [![webtrees major version](https://img.shields.io/badge/webtrees-v2.0.x-green)][2]
 [![webtrees major version](https://img.shields.io/badge/webtrees-v2.1.x-green)][2]
 [![webtrees major version](https://img.shields.io/badge/webtrees-v2.2.x-green)][2]
+[![webtrees major version](https://img.shields.io/badge/webtrees-v2.3.x%20(dev)-yellow)][2]
 [![Downloads](https://img.shields.io/github/downloads/elysch/webtrees-mitalteli-show-xref/total.svg)]()
 ![image](https://img.shields.io/github/downloads/elysch/webtrees-mitalteli-show-xref/latest/total)
 
