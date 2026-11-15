@@ -29,6 +29,10 @@ Installation & upgrading
 ------------------------
 Unpack the zip file and place the mitalteli-show-xref folder in the modules_v4 folder of webtrees. Upload the newly added folder to your server. It is activated by default and will work immediately. No additional configuration is required.
 
+Link symbols font
+-----------------
+The module bundles a small font (`resources/fonts/`, subsets of GNU Unifont under the SIL OFL 1.1, about 31 KB, a single file) so the link symbols (for example ⮺ and 🡆) are displayed also on devices whose system fonts do not have them, like most Android phones. It is served by the module itself, nobody has to install or configure anything, and the browser only downloads it when a symbol that the device cannot draw is shown. See `resources/fonts/NOTICE.txt` and `resources/fonts/OFL.txt` for the license and how to replace it.
+
 Translation
 -----------
 This module contains a few translatable textstrings. Copy the file es.php in the resources/lang folder and replace the Spanish text with the translation into your own language. Use the official two-letter language code as file name. Look in the webtrees folder resources/lang to find the correct code.

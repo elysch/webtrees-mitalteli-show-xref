@@ -1,0 +1,37 @@
+Bundled fonts
+=============
+
+mitalteli-symbols.woff
+
+A subset (only the arrow and symbol blocks) of GNU Unifont 15.1.01 (unifont.otf and
+unifont_upper.otf), bundled so the link symbols also display on devices (for example
+Android phones) whose system fonts do not have them.
+
+Copyright (c) 1998-2023 Roman Czyborra, Paul Hardy, Qianqian Fang, Andrew Miller,
+Johnnie Weaver, David Corbett, Nils Moskopp, Rebecca Bettencourt, Minseo Lee,
+Ho-Seok Ee, et al.
+Source: https://unifoundry.com/unifont/
+
+License: GNU Unifont is dual licensed (SIL Open Font License 1.1, and GNU GPL version 2 or
+later with the GNU Font Embedding Exception), as stated in the font's own metadata. This
+module uses and redistributes the font under the SIL Open Font License 1.1. The full license
+text is in OFL.txt, in this folder.
+
+Modifications: the font was subset (only the Unicode blocks listed in SYMBOL_FONT_FACES in
+ShowXrefModule.php), hinting and unneeded tables were removed, and it was rebuilt as a single
+standard TrueType (glyf) WOFF file for maximum browser compatibility. The font family name
+inside the file is "Mitalteli Symbols"; the original font has no Reserved Font Name.
+
+Integrity (SHA-256):
+218351867f81b5a59e57a4f37ee96b1179dcc26d753d8c66d606de89e8dd1d10  mitalteli-symbols.woff
+
+How to replace the font
+-----------------------
+If you prefer another font (for example Noto Sans Symbols 2, which looks smoother than
+Unifont, a pixel font), create a .woff file with only the blocks you need and replace this
+file keeping its name (or change SYMBOL_FONT_FACES in ShowXrefModule.php). The unicode-range
+must not be wider than what the file contains. Keep the license of the new font in this folder.
+
+  pyftsubset Font.ttf --unicodes="U+2190-21FF,U+25A0-25FF,U+2700-27BF,U+27F0-27FF,U+2900-297F,U+2B00-2BFF,U+1F800-1F8FF" \
+      --flavor=woff --layout-features= --no-hinting --name-IDs=0,1,2,3,4,5,6,13,14 \
+      --output-file=mitalteli-symbols.woff

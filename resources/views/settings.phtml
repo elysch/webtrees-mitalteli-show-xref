@@ -7,6 +7,7 @@ use Fisharebest\Webtrees\View;
  * @var string $title
  * @var string $control_panel_url Empty if the control panel page cannot be found
  * @var string $back_url          Validated URL of the last individual page, or empty
+ * @var string $symbol_font_css   CSS (already escaped by the module) to draw the symbols, or empty
  */
 
 // The control panel class is in a different namespace in webtrees 2.2 and 2.3, so the URL is built by the module.
@@ -15,6 +16,12 @@ $breadcrumbs = $control_panel_url === ''
     : [$control_panel_url => I18N::translate('Control panel'), $title];
 
 ?>
+
+<?php if ($symbol_font_css !== '') : ?>
+<style>
+<?= $symbol_font_css ?>
+</style>
+<?php endif ?>
 
 <?= view('components/breadcrumbs', ['links' => $breadcrumbs]) ?>
 

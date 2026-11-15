@@ -35,7 +35,7 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
     use ModuleConfigTrait;
 
     public const CUSTOM_AUTHOR = 'elysch';
-    public const CUSTOM_VERSION = '4.3.0';
+    public const CUSTOM_VERSION = '4.3.1';
     public const GITHUB_REPO = 'webtrees-mitalteli-show-xref';
     public const AUTHOR_WEBSITE = 'https://github.com/elysch/webtrees-mitalteli-show-xref/';
     public const CUSTOM_SUPPORT_URL = self::AUTHOR_WEBSITE . 'issues';
@@ -51,6 +51,19 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
     public const MODULE_TITLE = 'XREF and UID values module.';
 
     private const REGEX_UID_INTERNAL = '[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}|[0-9a-fA-F]{36}|[0-9a-fA-F]{38}';
+
+    /** Font family name used for the link symbols (declared with @font-face by symbolFontCss()). */
+    private const SYMBOL_FONT_FAMILY = 'MitalteliSymbols';
+
+    /**
+     * Font files served by the module itself (inside resources/) and the Unicode ranges each one is used for.
+     * The browser only downloads a file when the page contains a character of its range that no earlier
+     * font in the font stack can draw (see symbolFontCss()), so users do not have to install anything.
+     * The ranges must not be wider than what the file really contains (see resources/fonts/NOTICE.txt).
+     */
+    private const SYMBOL_FONT_FACES = [
+        'fonts/mitalteli-symbols.woff' => 'U+2190-21FF, U+25A0-25FF, U+2700-27BF, U+27F0-27FF, U+2900-297F, U+2B00-2BFF, U+1F800-1F8FF',
+    ];
 
     public ModuleService $module_service;
 
@@ -186,7 +199,79 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
      */
     public function headContent(): string
     {
-        return "\n" . '<link rel="stylesheet" href="' . e($this->assetUrl('css/style.css')) . '">' . "\n";
+        $html = "\n" . '<link rel="stylesheet" href="' . e($this->assetUrl('css/style.css')) . '">' . "\n";
+
+        // The @font-face rules are generated here (and not written in style.css) because the font URL
+        // has to be the one webtrees builds with assetUrl(), which does not have a fixed form.
+        $font_css = $this->symbolFontCss();
+
+        if ($font_css !== '') {
+            $html .= '<style>' . "\n" . $font_css . '</style>' . "\n";
+        }
+
+        return $html;
+    }
+
+    /**
+     * CSS that lets every browser (also Android ones, which do not have these glyphs installed) draw the
+     * link symbols: @font-face rules for the fonts bundled in resources/fonts/ and the rules that apply them.
+     *
+     * The bundled font is the LAST option of the font stack, after the fonts of the device, so it is only
+     * used (and downloaded) for the characters that the device cannot draw by itself.
+     *
+     * The result is meant for the content of a <style> element, where HTML entities are NOT decoded, so the
+     * only value that is not a constant (the URL) is escaped as a CSS string, not as HTML.
+     *
+     * @return string Empty if the font files are missing, so a missing file never breaks a page.
+     */
+    public function symbolFontCss(): string
+    {
+        $css = '';
+
+        foreach (self::SYMBOL_FONT_FACES as $asset => $unicode_range) {
+            if (!is_file($this->resourcesFolder() . $asset)) {
+                continue;
+            }
+
+            $css .= '@font-face{font-family:"' . self::SYMBOL_FONT_FAMILY . '";font-style:normal;font-weight:400;'
+                . 'font-display:swap;src:url("' . $this->cssString($this->assetUrl($asset)) . '") format("woff");'
+                . 'unicode-range:' . $unicode_range . ';}' . "\n";
+        }
+
+        if ($css === '') {
+            return '';
+        }
+
+        // Elements (the link in the sidebar, the field and the buttons of the preferences page) that only
+        // contain the symbol. The fonts of the device go first so that, where they have a better glyph, it is used.
+        $css .= '.mitalteli-link-symbol,.mitalteli-show-xref #link-symbol,.mitalteli-show-xref #new-custom-symbol,'
+            . '.mitalteli-show-xref button[data-symbol]{font-family:system-ui,"Segoe UI Symbol","Apple Symbols","'
+            . self::SYMBOL_FONT_FAMILY . '",sans-serif}' . "\n"
+            // The field to add symbols also has a text placeholder, which keeps the font of the page.
+            . '.mitalteli-show-xref #new-custom-symbol::placeholder{font-family:var(--bs-body-font-family,system-ui,sans-serif)}' . "\n";
+
+        return $css;
+    }
+
+    /**
+     * Escape a value to be put between double quotes in CSS (a string or a url("...")).
+     * Backslash and quote would end the string; line breaks are not allowed in it; < and > are escaped
+     * so the value can never close the <style> element it is written in.
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    private function cssString(string $value): string
+    {
+        return strtr($value, [
+            '\\' => '\\\\',
+            '"'  => '\\"',
+            "\n" => '\\A ',
+            "\r" => '\\D ',
+            '<'  => '\\3C ',
+            '>'  => '\\3E ',
+        ]);
     }
 
     /**
@@ -308,6 +393,8 @@ class ShowXrefModule extends AbstractModule implements ModuleCustomInterface, Mo
             'title'               => $this->title(),
             'control_panel_url'   => $this->controlPanelUrl(),
             'back_url'            => $back_url,
+            // The administration layout does not print the head content of the modules.
+            'symbol_font_css'     => $this->symbolFontCss(),
         ]);
     }
 
