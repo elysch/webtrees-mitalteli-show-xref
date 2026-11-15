@@ -29,25 +29,33 @@ use Fisharebest\Webtrees\View;
     // https://stackoverflow.com/questions/14196671/session-only-cookies-with-javascript
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value
     // Note that having the browser set to Continue where you left off will not delete the session cookie.
-    function setCookie(cname, cvalue) {
-        if (window.location.protocol == 'http:') {
-            document.cookie = cname + "=" + cvalue + ";path=/;SameSite=Lax";
-        } else {
-            document.cookie = cname + "=" + cvalue + ";path=/;SameSite=Lax;Secure";
+    // jQuery is not available in webtrees 2.3, so only plain JavaScript is used here.
+    (function () {
+        function setCookie(cname, cvalue) {
+            // The value is encoded; PHP decodes it automatically when it reads the cookie.
+            var cookie = cname + "=" + encodeURIComponent(cvalue) + ";path=/;SameSite=Lax";
+
+            if (window.location.protocol !== 'http:') {
+                cookie += ";Secure";
+            }
+
+            document.cookie = cookie;
         }
-    }
 
-    function deleteCookie(cname) {
-        document.cookie = cname + "=; Max-Age=0; path=/";
-    }
+        function deleteCookie(cname) {
+            document.cookie = cname + "=; Max-Age=0; path=/";
+        }
 
-    // delete any old cookie
-    deleteCookie("MSHXREF_PAGE")
+        // delete any old cookie
+        deleteCookie("MSHXREF_PAGE");
 
-    // set a new cookie when clicking the config link
-    $('.mitalteli-show-xref-config-link a').on('click', function(e) {
-        setCookie("MSHXREF_PAGE", window.location.href);
-    });
+        // set a new cookie when clicking the config link
+        document.querySelectorAll('.mitalteli-show-xref-config-link a').forEach(function (link) {
+            link.addEventListener('click', function () {
+                setCookie("MSHXREF_PAGE", window.location.href);
+            });
+        });
+    })();
 </script>
 <?php View::endpush() ?>
 

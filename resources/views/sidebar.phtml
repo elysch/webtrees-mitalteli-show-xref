@@ -1,6 +1,5 @@
 <?php
 
-use Ramsey\Uuid\Uuid;
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\View;
 use Fisharebest\Webtrees\Individual;
@@ -24,11 +23,6 @@ use Fisharebest\Webtrees\Auth;
 
 <div id="mitalteli-ShowXrefs">
     <!-- SHOW XREF INFORMATION -->
-    <?php
-        $expanded = "true";
-        $show = " show";
-        $id = 'collapse-' . Uuid::uuid4()->toString();
-    ?>
     <div class="show-xref-area mb-3">
         <div class="wt-sidebar-content wt-sidebar-family-navigator">
             <div class="show-xref-settings">
@@ -134,8 +128,25 @@ use Fisharebest\Webtrees\Auth;
 <?php if ($expand_sidebar) : ?>
     <?php View::push('javascript') ?>
     <script>
-        $("#sidebar-content-family_nav").removeClass("show");
-        $("#sidebar-content-_mitalteli-show-xref_").addClass("show");
+        // jQuery is not available in webtrees 2.3, so only plain JavaScript is used here.
+        (function () {
+            function setExpanded(panel, expanded) {
+                if (panel === null) {
+                    return;
+                }
+
+                panel.classList.toggle('show', expanded);
+
+                // Keep the state of the accordion header consistent with its panel.
+                document.querySelectorAll('[data-bs-target="#' + panel.id + '"]').forEach(function (button) {
+                    button.classList.toggle('collapsed', !expanded);
+                    button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+                });
+            }
+
+            setExpanded(document.getElementById('sidebar-content-family_nav'), false);
+            setExpanded(document.getElementById(<?= json_encode('sidebar-content-' . $module->name(), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>), true);
+        })();
     </script>
     <?php View::endpush() ?>
 <?php endif; ?>

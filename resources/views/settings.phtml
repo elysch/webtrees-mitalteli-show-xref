@@ -2,16 +2,26 @@
 
 use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\View;
-use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
+
+/**
+ * @var string $title
+ * @var string $control_panel_url Empty if the control panel page cannot be found
+ * @var string $back_url          Validated URL of the last individual page, or empty
+ */
+
+// The control panel class is in a different namespace in webtrees 2.2 and 2.3, so the URL is built by the module.
+$breadcrumbs = $control_panel_url === ''
+    ? [$title]
+    : [$control_panel_url => I18N::translate('Control panel'), $title];
 
 ?>
 
-<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), $title]]) ?>
+<?= view('components/breadcrumbs', ['links' => $breadcrumbs]) ?>
 
 <div class="d-flex justify-content-between align-items-baseline">
     <h1><?= $title ?></h1>
-    <?php if (isset($_COOKIE["MSHXREF_PAGE"])): ?>
-    <div><a href="<?= $_COOKIE["MSHXREF_PAGE"] ?>"><?= I18N::translate('back to the last individual page') ?></a></div>
+    <?php if ($back_url !== '') : ?>
+    <div><a href="<?= e($back_url) ?>"><?= I18N::translate('back to the last individual page') ?></a></div>
     <?php endif ?>
 </div>
 

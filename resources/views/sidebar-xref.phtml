@@ -237,10 +237,10 @@ use Fisharebest\Webtrees\Webtrees;
                                 </div>
                             </div>
                         <?php else : ?>
-                            <?php if ($child !== $child) : ?>
+                            <?php if ($child->canShow()) : ?>
                                 <?= $child->xref() ?>
                             <?php else : ?>
-                                <?= I18N::translate('Private') ?></p>
+                                <?= I18N::translate('Private') ?>
                             <?php endif ?>
                         <?php endif ?>
                     </th>
